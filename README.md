@@ -26,33 +26,15 @@ Hand-implemented each component of the RAG
 
 ## Hallucination mitigation
 
-This was the core design goal, motivated directly by a real problem: LLM-generated compliance reports are only useful if their claims can be trusted and audited.
+LLM-generated compliance reports are only useful if their claims can be trusted and audited, hence why I implemented many checks
 
-- **Citation grounding** — every claim must cite a source entity ID; citations are verified programmatically against what was actually retrieved (not just prompted for)
-- **Structured JSON output** — Pydantic schema constrains output at the token level, guaranteeing parseable, consistent report structure
-- **Consistency checking** — the same query is run multiple times at higher temperature; disagreement across runs signals low-confidence findings that should route to human review rather than auto-approval
+- **Citation grounding**: every claim must cite a source entity ID; citations are verified programmatically against what was actually retrieved (not just prompted for)
+- **Structured JSON output**: Pydantic schema constrains output at the token level, guaranteeing parseable, consistent report structure
+- **Consistency checking**: the same query is run multiple times at higher temperature; disagreement across runs signals low-confidence findings that should route to human review rather than auto-approval
 
 ## Data
 
-Uses [OpenSanctions](https://www.opensanctions.org) bulk data (free, non-commercial use) — a real, public database of sanctioned entities, PEPs, and their sanctions history.
-
-To reproduce:
-1. Download the "targets simple" CSV from `https://www.opensanctions.org/datasets/default/`
-2. Place it at `data/targets.simple.csv`
-3. Run `notebook.ipynb` top to bottom
-
-## Setup
-
-\`\`\`bash
-python3 -m venv venv
-source venv/bin/activate
-pip install openai python-dotenv numpy pydantic
-\`\`\`
-
-Create a `.env` file with:
-\`\`\`
-OPENAI_API_KEY=your-key-here
-\`\`\`
+Uses [OpenSanctions](https://www.opensanctions.org) bulk data (free, non-commercial use)
 
 ## Example output
 
@@ -72,6 +54,6 @@ OPENAI_API_KEY=your-key-here
 
 ## Limitations
 
-- Semantic retrieval can surface topically-adjacent but incorrect matches (e.g. retrieving other Middle East sanctions entries for an Iran-specific query) — grounding and consistency checks reduce but don't eliminate this risk
-- Not evaluated against a labeled ground-truth set; risk-level classifications are LLM judgments, not verified against actual compliance outcomes
+- Semantic retrieval can surface topically-adjacent but incorrect matches (e.g. retrieving other Middle East sanctions entries for an Iran-specific query) -> can't eliminate this risk even with grounding and consistency checks
+- Didn't evaluate against a labeled ground-truth set -? the risk-level classifications are LLM judgments (not verified against actual compliance outcomes)
 - Uses public data only; not tested against real bank-grade document volume or formats (scanned PDFs, OCR output)
