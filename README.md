@@ -1,27 +1,27 @@
 # ComplianceRAG
 
-A retrieval-augmented generation (RAG) pipeline built from scratch for automated KYCC/AML due diligence research — no LangChain, no vector database library, so every stage of the pipeline is transparent and inspectable.
+A retrieval-augmented generation (RAG) pipeline built from scratch for automated KYCC/AML due diligence research.
 
-Built as an extension of work from my Corporate Banking / Transaction Banking internship, using public sanctions data instead of confidential bank records.
+Built this to extend my work from my corporate banking/transaction banking internship. Used public sanctions data instead of bank data (confidential)
 
 ## What it does
 
-Given a natural-language compliance query (e.g. *"Is this entity on any EU sanctions lists?"*), the pipeline:
+Given a natural-language compliance query (e.g. *"Is this entity on any EU sanctions lists?"*):
 
 1. Retrieves relevant entity records from a database of sanctioned individuals and companies (via semantic vector search, implemented from scratch with numpy)
 2. Generates a structured due-diligence report with inline source citations
 3. Verifies every citation is real (not hallucinated) before returning the report
-4. Runs a consistency check — repeating generation multiple times to flag unstable/low-confidence findings for human review
+4. Runs a consistency check: repeats generation multiple times to flag unstable/low-confidence findings for human review
 
-## Why "from scratch"
+## RAG
 
-Every core RAG component is hand-implemented rather than imported from a framework, specifically so the failure modes are visible and fixable:
+Hand-implemented each component of the RAG
 
 | Component | Implementation |
 |---|---|
-| Chunking | Custom sentence-aware splitter (`src/chunking.py`) — avoids cutting entities/names mid-word |
+| Chunking | Custom sentence-aware splitter (`src/chunking.py`) —> avoids cutting entities/names mid-word |
 | Embeddings | OpenAI `text-embedding-3-small`, batched + cached to disk |
-| Vector search | Cosine similarity via raw numpy — no vector DB |
+| Vector search | Cosine similarity via raw numpy B |
 | Generation | OpenAI `gpt-4o-mini` with schema-constrained structured output (Pydantic) |
 
 ## Hallucination mitigation
